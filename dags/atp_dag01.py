@@ -1,7 +1,23 @@
 from datetime import timedelta
 from airflow import DAG
 from airflow.operators.bash_operator import BashOperator
+from airflow.operators.python_operator import PythonOperator
 from airflow.utils.dates import days_ago
+import pandas as pd
+import zipfile
+import pandas as pd
+import sqlalchemy
+from sqlalchemy import Table, Column, Integer, String, MetaData
+
+
+def insert_data():
+
+    zf = zipfile.ZipFile('/Users/psehgal/atp-tour-20002016.zip')
+    df = pd.read_csv(zf.open('atp-tour-20002016.csv'))
+    engine = sqlalchemy.create_engine('mysql+pymysql://root:yourpassword@localhost/ATP_tennis')
+    df.to_sql(name='simple_result', con=engine, index=False, if_exists='append')
+
+
 
 default_args = {
     'owner': 'airflow',
@@ -16,7 +32,7 @@ default_args = {
 }
 
 dag = DAG(
-    dag_id = 'atp_data',
+    dag_id = 'atp_data01',
     default_args=default_args,
     description='ATP data from kaggle API',
     schedule_interval=timedelta(days=1),
@@ -29,13 +45,17 @@ t1 = BashOperator(
     dag=dag,
 )
 
-#t2 = BashOperator(
-#    task_id='sleep',
-#    depends_on_past=False,
-#    bash_command='sleep 5',
-#    retries=3,
-#    dag=dag,
-#)
+
+t2 = PythonOperator(
+        task_id='insert_in_sql',
+        provide_context = True,
+        python_callable = insert_data,
+        dag=dag
+)
+
+
+t1 >> t2
+
 #dag.doc_md = __doc__
 
 #t1.doc_md = """\
