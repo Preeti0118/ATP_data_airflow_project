@@ -16,6 +16,7 @@ from zipfile import ZipFile
 # from sqlalchemy import Table, Column, Integer, String, MetaData
 
 
+
 def upload_file(file_name, bucket, object_name=None):
     """
     upload file to an S3 bucket
@@ -66,7 +67,7 @@ default_args = {
 
 
 dag = DAG(
-    dag_id='atp_data01',
+    dag_id='atp_data02',
     default_args=default_args,
     description='ATP data from kaggle API',
     schedule_interval=timedelta(days=1),
@@ -99,35 +100,3 @@ t3 = PythonOperator(
 
 
 t1 >> t2 >> t3
-
-
-
-
-#dag.doc_md = __doc__
-
-#t1.doc_md = """\
-#### Task Documentation
-#You can document your task using the attributes `doc_md` (markdown),
-#`doc` (plain text), `doc_rst`, `doc_json`, `doc_yaml` which gets
-#rendered in the UI's Task Instance Details page.
-#![img](http://montcs.bloomu.edu/~bobmon/Semesters/2012-01/491/import%20soul.png)
-#"""
-#templated_command = """
-#{% for i in range(5) %}
-#    echo "{{ ds }}"
-#    echo "{{ macros.ds_add(ds, 7)}}"
-#    echo "{{ params.my_param }}"
-#{% endfor %}
-#"""
-
-#t3 = BashOperator(
-#    task_id='templated',
-#    depends_on_past=False,
-#    bash_command=templated_command,
-#    params={'my_param': 'Parameter I passed in'},
-#    dag=dag,
-##)
-#
-#t1 >> [t2, t3]
-
-#t1 >> t2 >> t3

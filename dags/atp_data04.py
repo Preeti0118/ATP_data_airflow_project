@@ -66,7 +66,7 @@ default_args = {
 
 
 dag = DAG(
-    dag_id='atp_data01',
+    dag_id='atp_data04',
     default_args=default_args,
     description='ATP data from kaggle API',
     schedule_interval=timedelta(days=1),
@@ -98,7 +98,7 @@ t3 = PythonOperator(
 )
 
 
-t1 >> t2 >> t3
+dag >> t1 >> t2 >> t3
 
 
 
