@@ -28,5 +28,12 @@ def upload_file(file_name, bucket, object_name=None):
 
 def insert_data():
     upload_file('/Users/psehgal/Data.csv', 'preeti.first.boto.s3.bucket', 'atpdata_test')
+    
 
 insert_data()
+
+
+
+
+
+
