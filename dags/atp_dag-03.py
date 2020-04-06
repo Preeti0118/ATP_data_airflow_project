@@ -52,6 +52,3 @@ t2 = PythonOperator(
 )
 
 t1 >> t2
-
-
-#
