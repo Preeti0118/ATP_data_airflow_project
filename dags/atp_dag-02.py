@@ -53,11 +53,11 @@ dag = DAG(
 )
 
 
-t1 = BashOperator(
-    task_id='run_kaggle_api',
-    bash_command='kaggle datasets download -d jordangoblet/atp-tour-20002016',
-    dag=dag,
-)
+#t1 = BashOperator(
+#    task_id='run_kaggle_api',
+#     bash_command='kaggle datasets download -d jordangoblet/atp-tour-20002016',
+#     dag=dag,
+# )
 
 t2 = PythonOperator(
         task_id='move_file_to_AWS_S3',
@@ -66,4 +66,4 @@ t2 = PythonOperator(
         dag=dag
 )
 
-t1 >> t2
+# t1 >> t2
