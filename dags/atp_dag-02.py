@@ -22,6 +22,7 @@ def upload_file(file_name, bucket, object_name=None):
 
     # Upload the file
     s3_client = boto3.client('s3')
+
     try:
         response = s3_client.upload_file(file_name, bucket, object_name)
     except ClientError as e:
@@ -61,7 +62,7 @@ dag = DAG(
 
 t2 = PythonOperator(
         task_id='move_file_to_AWS_S3',
-        provide_context=True,
+        provide_context=False,
         python_callable=insert_data,
         dag=dag
 )
