@@ -24,6 +24,6 @@ dag = DAG(
 
 t1 = BashOperator(
     task_id='run_kaggle_api',
-    bash_command='kaggle datasets download -d jordangoblet/atp-tour-20002016',
+    bash_command='kaggle datasets download -d jordangoblet/atp-tour-20002016 -p /Users/psehgal/atp_test',
     dag=dag,
 )
