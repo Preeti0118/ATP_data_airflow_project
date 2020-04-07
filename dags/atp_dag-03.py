@@ -9,12 +9,13 @@ import os
 import zipfile
 from zipfile import ZipFile
 import pandas as pd
-import sqlalchemy
+from sqlalchemy import create_engine
 from sqlalchemy import Table, Column, Integer, String, MetaData
+import pymysql
 
 def insert_sql():
     df = pd.read_csv('/Users/psehgal/Data.csv', encoding='ISO-8859-1')
-    engine = sqlalchemy.create_engine('mysql+pymysql://root:yourpassword@localhost:3306/ATP_tennis')
+    engine = create_engine('mysql+pymysql://root:yourpassword@localhost:3306/ATP_tennis')
     df.to_sql(name='atprawdata', con=engine, index=False, if_exists='replace')
 
 
@@ -40,15 +41,15 @@ dag = DAG(
 
 t1 = BashOperator(
     task_id='run_kaggle_api',
-    bash_command='kaggle datasets download -d jordangoblet/atp-tour-20002016',
+    bash_command='kaggle datasets download -d jordangoblet/atp-tour-20002016 -p /Users/psehgal/atp_test/',
     dag=dag,
 )
 
 t2 = PythonOperator(
         task_id='move_data_from_file_to_SQL',
-        provide_context=True,
+        provide_context=False,
         python_callable=insert_sql,
-        dag=dag
+        dag=dag,
 )
 
 t1 >> t2
