@@ -1,6 +1,7 @@
 from datetime import timedelta
 from airflow import DAG
 from airflow.operators.bash_operator import BashOperator
+from airflow.operators.papermill_operator import PapermillOperator
 from airflow.utils.dates import days_ago
 from datetime import timedelta
 from airflow import DAG
@@ -24,6 +25,8 @@ import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy import Table, Column, Integer, String, MetaData
 import pymysql
+import papermill as pm
+
 
 
 def unzip():
@@ -60,9 +63,16 @@ def insert_data():
 
 
 def insert_sql():
-    df = pd.read_csv('/Users/psehgal/atp_test/Data.csv', encoding='ISO-8859-1')
     engine = create_engine('mysql+pymysql://root:yourpassword@localhost:3306/ATP_tennis')
+    df = pd.read_csv('/Users/psehgal/atp_test/Data.csv', encoding='ISO-8859-1')
     df.to_sql(name='atprawdata', con=engine, index=False, if_exists='replace')
+
+def call_jupyter():
+    pm.execute_notebook('/Users/psehgal/dev/airflow_home/atp_mens_tour.ipynb',
+                        '/Users/psehgal/dev/airflow_home/atp_mens_tour_output.ipynb',
+                        parameters={'file_name': '/Users/psehgal/Data.csv'},
+
+                        )
 
 
 def remove_files():
@@ -105,7 +115,7 @@ t3 = PythonOperator(
         task_id='move_file_to_AWS_S3',
         provide_context=False,
         python_callable=insert_data,
-        dag=dag
+        dag=dag,
 )
 
 t4 = PythonOperator(
@@ -116,10 +126,17 @@ t4 = PythonOperator(
 )
 
 t5 = PythonOperator(
-        task_id='remove_file',
+        task_id='call_jupyter_from_pythionoperator',
         provide_context=False,
-        python_callable=remove_files,
+        python_callable=call_jupyter,
         dag=dag,
 )
+# t6 = PythonOperator(
+#         task_id='remove_file',
+#         provide_context=False,
+#         python_callable=remove_files,
+#         dag=dag,
+# )
+
 
 t1 >> t2 >> [t3, t4] >> t5
