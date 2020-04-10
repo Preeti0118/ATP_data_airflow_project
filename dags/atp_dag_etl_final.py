@@ -62,6 +62,7 @@ def insert_data():
     upload_file('/Users/psehgal/atp_test/Data.csv', 'preeti.first.boto.s3.bucket', 'atpdata')
 
 
+
 def insert_sql():
     engine = create_engine('mysql+pymysql://root:yourpassword@localhost:3306/ATP_tennis')
     df = pd.read_csv('/Users/psehgal/atp_test/Data.csv', encoding='ISO-8859-1')
@@ -70,14 +71,14 @@ def insert_sql():
 def call_jupyter():
     pm.execute_notebook('/Users/psehgal/dev/airflow_home/atp_mens_tour.ipynb',
                         '/Users/psehgal/dev/airflow_home/atp_mens_tour_output.ipynb',
-                        parameters={'file_name': '/Users/psehgal/Data.csv'},
+                        parameters={'file_name': '/Users/psehgal/atp_test/Data.csv'},
 
                         )
 
+def insert_pdfreport():
+    upload_file('/Users/psehgal/dev/airflow_home/atp_mens_tour_pdf_report.pdf', 'preeti.first.boto.s3.bucket',
+                'pdfreport')
 
-def remove_files():
-    os.remove('/Users/psehgal/atp_test/atp-tour-20002016.zip')
-    os.remove('/Users/psehgal/atp_test/Data.csv')
 
 default_args = {
     'owner': 'airflow',
@@ -131,12 +132,13 @@ t5 = PythonOperator(
         python_callable=call_jupyter,
         dag=dag,
 )
-# t6 = PythonOperator(
-#         task_id='remove_file',
-#         provide_context=False,
-#         python_callable=remove_files,
-#         dag=dag,
-# )
+
+t6 = PythonOperator(
+        task_id='move_pdfreport_to_s3',
+        provide_context=False,
+        python_callable=insert_pdfreport,
+        dag=dag,
+)
 
 
-t1 >> t2 >> [t3, t4] >> t5
+t1 >> t2 >> [t3, t4] >> t5 >> t6
