@@ -1,0 +1,702 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {
+    "_cell_guid": "b1076dfc-b9ad-4769-8c92-a6c4dae69d19",
+    "_uuid": "8f2839f25d086af736a60e9eeb907d3b93b6e0e5"
+   },
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "import pandas as pd\n",
+    "import matplotlib.pyplot as plt\n",
+    "from matplotlib.pyplot import xticks\n",
+    "from scipy.stats import skew\n",
+    "import seaborn as sns\n",
+    "import os\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 28,
+   "metadata": {
+    "tags": [
+     "parameters"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "file_path1={'file_name': '/Users/psehgal/Data.csv'}\n",
+    "file_location = file_path1['file_name'] "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 29,
+   "metadata": {
+    "_uuid": "0a8931240e7c2fc0e524bd770a0b4f20e42ce1f4"
+   },
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/Users/psehgal/opt/anaconda3/lib/python3.7/site-packages/IPython/core/interactiveshell.py:3058: DtypeWarning: Columns (11,12) have mixed types.Specify dtype option on import or set low_memory=False.\n",
+      "  interactivity=interactivity, compiler=compiler, result=result)\n"
+     ]
+    }
+   ],
+   "source": [
+    "#data = pd.read_csv('/Users/psehgal/dev/airflow_home/kaggleatpdata.csv', dtype='unicode')\n",
+    "data = pd.read_csv(file_location, encoding = 'ISO-8859-1')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "metadata": {
+    "_uuid": "05fc6bfaa59d8f8a8e248386d620a6fbffeb4996"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>ATP</th>\n",
+       "      <th>Location</th>\n",
+       "      <th>Tournament</th>\n",
+       "      <th>Date</th>\n",
+       "      <th>Series</th>\n",
+       "      <th>Court</th>\n",
+       "      <th>Surface</th>\n",
+       "      <th>Round</th>\n",
+       "      <th>Best of</th>\n",
+       "      <th>Winner</th>\n",
+       "      <th>...</th>\n",
+       "      <th>UBW</th>\n",
+       "      <th>UBL</th>\n",
+       "      <th>LBW</th>\n",
+       "      <th>LBL</th>\n",
+       "      <th>SJW</th>\n",
+       "      <th>SJL</th>\n",
+       "      <th>MaxW</th>\n",
+       "      <th>MaxL</th>\n",
+       "      <th>AvgW</th>\n",
+       "      <th>AvgL</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>1</td>\n",
+       "      <td>Adelaide</td>\n",
+       "      <td>Australian Hardcourt Championships</td>\n",
+       "      <td>3/01/2000</td>\n",
+       "      <td>International</td>\n",
+       "      <td>Outdoor</td>\n",
+       "      <td>Hard</td>\n",
+       "      <td>1st Round</td>\n",
+       "      <td>3</td>\n",
+       "      <td>Dosedel S.</td>\n",
+       "      <td>...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>1</td>\n",
+       "      <td>Adelaide</td>\n",
+       "      <td>Australian Hardcourt Championships</td>\n",
+       "      <td>3/01/2000</td>\n",
+       "      <td>International</td>\n",
+       "      <td>Outdoor</td>\n",
+       "      <td>Hard</td>\n",
+       "      <td>1st Round</td>\n",
+       "      <td>3</td>\n",
+       "      <td>Enqvist T.</td>\n",
+       "      <td>...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>1</td>\n",
+       "      <td>Adelaide</td>\n",
+       "      <td>Australian Hardcourt Championships</td>\n",
+       "      <td>3/01/2000</td>\n",
+       "      <td>International</td>\n",
+       "      <td>Outdoor</td>\n",
+       "      <td>Hard</td>\n",
+       "      <td>1st Round</td>\n",
+       "      <td>3</td>\n",
+       "      <td>Escude N.</td>\n",
+       "      <td>...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>1</td>\n",
+       "      <td>Adelaide</td>\n",
+       "      <td>Australian Hardcourt Championships</td>\n",
+       "      <td>3/01/2000</td>\n",
+       "      <td>International</td>\n",
+       "      <td>Outdoor</td>\n",
+       "      <td>Hard</td>\n",
+       "      <td>1st Round</td>\n",
+       "      <td>3</td>\n",
+       "      <td>Federer R.</td>\n",
+       "      <td>...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>1</td>\n",
+       "      <td>Adelaide</td>\n",
+       "      <td>Australian Hardcourt Championships</td>\n",
+       "      <td>3/01/2000</td>\n",
+       "      <td>International</td>\n",
+       "      <td>Outdoor</td>\n",
+       "      <td>Hard</td>\n",
+       "      <td>1st Round</td>\n",
+       "      <td>3</td>\n",
+       "      <td>Fromberg R.</td>\n",
+       "      <td>...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>...</th>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>46647</th>\n",
+       "      <td>54</td>\n",
+       "      <td>St. Petersburg</td>\n",
+       "      <td>St. Petersburg Open</td>\n",
+       "      <td>23/09/2016</td>\n",
+       "      <td>ATP250</td>\n",
+       "      <td>Indoor</td>\n",
+       "      <td>Hard</td>\n",
+       "      <td>Quarterfinals</td>\n",
+       "      <td>3</td>\n",
+       "      <td>Zverev A.</td>\n",
+       "      <td>...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>1.57</td>\n",
+       "      <td>2.38</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>1.66</td>\n",
+       "      <td>2.45</td>\n",
+       "      <td>1.60</td>\n",
+       "      <td>2.30</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>46648</th>\n",
+       "      <td>54</td>\n",
+       "      <td>St. Petersburg</td>\n",
+       "      <td>St. Petersburg Open</td>\n",
+       "      <td>23/09/2016</td>\n",
+       "      <td>ATP250</td>\n",
+       "      <td>Indoor</td>\n",
+       "      <td>Hard</td>\n",
+       "      <td>Quarterfinals</td>\n",
+       "      <td>3</td>\n",
+       "      <td>Wawrinka S.</td>\n",
+       "      <td>...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>1.22</td>\n",
+       "      <td>4.33</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>1.24</td>\n",
+       "      <td>4.91</td>\n",
+       "      <td>1.21</td>\n",
+       "      <td>4.34</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>46649</th>\n",
+       "      <td>54</td>\n",
+       "      <td>St. Petersburg</td>\n",
+       "      <td>St. Petersburg Open</td>\n",
+       "      <td>24/09/2016</td>\n",
+       "      <td>ATP250</td>\n",
+       "      <td>Indoor</td>\n",
+       "      <td>Hard</td>\n",
+       "      <td>Semifinals</td>\n",
+       "      <td>3</td>\n",
+       "      <td>Zverev A.</td>\n",
+       "      <td>...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>2.38</td>\n",
+       "      <td>1.57</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>3.12</td>\n",
+       "      <td>1.57</td>\n",
+       "      <td>2.68</td>\n",
+       "      <td>1.46</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>46650</th>\n",
+       "      <td>54</td>\n",
+       "      <td>St. Petersburg</td>\n",
+       "      <td>St. Petersburg Open</td>\n",
+       "      <td>24/09/2016</td>\n",
+       "      <td>ATP250</td>\n",
+       "      <td>Indoor</td>\n",
+       "      <td>Hard</td>\n",
+       "      <td>Semifinals</td>\n",
+       "      <td>3</td>\n",
+       "      <td>Wawrinka S.</td>\n",
+       "      <td>...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>1.33</td>\n",
+       "      <td>3.40</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>1.41</td>\n",
+       "      <td>3.80</td>\n",
+       "      <td>1.31</td>\n",
+       "      <td>3.40</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>46651</th>\n",
+       "      <td>54</td>\n",
+       "      <td>St. Petersburg</td>\n",
+       "      <td>St. Petersburg Open</td>\n",
+       "      <td>25/09/2016</td>\n",
+       "      <td>ATP250</td>\n",
+       "      <td>Indoor</td>\n",
+       "      <td>Hard</td>\n",
+       "      <td>The Final</td>\n",
+       "      <td>3</td>\n",
+       "      <td>Zverev A.</td>\n",
+       "      <td>...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>3.30</td>\n",
+       "      <td>1.33</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>3.58</td>\n",
+       "      <td>1.36</td>\n",
+       "      <td>3.36</td>\n",
+       "      <td>1.31</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>46652 rows × 54 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "       ATP        Location                          Tournament        Date  \\\n",
+       "0        1        Adelaide  Australian Hardcourt Championships   3/01/2000   \n",
+       "1        1        Adelaide  Australian Hardcourt Championships   3/01/2000   \n",
+       "2        1        Adelaide  Australian Hardcourt Championships   3/01/2000   \n",
+       "3        1        Adelaide  Australian Hardcourt Championships   3/01/2000   \n",
+       "4        1        Adelaide  Australian Hardcourt Championships   3/01/2000   \n",
+       "...    ...             ...                                 ...         ...   \n",
+       "46647   54  St. Petersburg                 St. Petersburg Open  23/09/2016   \n",
+       "46648   54  St. Petersburg                 St. Petersburg Open  23/09/2016   \n",
+       "46649   54  St. Petersburg                 St. Petersburg Open  24/09/2016   \n",
+       "46650   54  St. Petersburg                 St. Petersburg Open  24/09/2016   \n",
+       "46651   54  St. Petersburg                 St. Petersburg Open  25/09/2016   \n",
+       "\n",
+       "              Series    Court Surface          Round  Best of       Winner  \\\n",
+       "0      International  Outdoor    Hard      1st Round        3   Dosedel S.   \n",
+       "1      International  Outdoor    Hard      1st Round        3   Enqvist T.   \n",
+       "2      International  Outdoor    Hard      1st Round        3    Escude N.   \n",
+       "3      International  Outdoor    Hard      1st Round        3   Federer R.   \n",
+       "4      International  Outdoor    Hard      1st Round        3  Fromberg R.   \n",
+       "...              ...      ...     ...            ...      ...          ...   \n",
+       "46647         ATP250   Indoor    Hard  Quarterfinals        3    Zverev A.   \n",
+       "46648         ATP250   Indoor    Hard  Quarterfinals        3  Wawrinka S.   \n",
+       "46649         ATP250   Indoor    Hard     Semifinals        3    Zverev A.   \n",
+       "46650         ATP250   Indoor    Hard     Semifinals        3  Wawrinka S.   \n",
+       "46651         ATP250   Indoor    Hard      The Final        3    Zverev A.   \n",
+       "\n",
+       "       ... UBW UBL   LBW   LBL  SJW  SJL  MaxW  MaxL  AvgW  AvgL  \n",
+       "0      ... NaN NaN   NaN   NaN  NaN  NaN   NaN   NaN   NaN   NaN  \n",
+       "1      ... NaN NaN   NaN   NaN  NaN  NaN   NaN   NaN   NaN   NaN  \n",
+       "2      ... NaN NaN   NaN   NaN  NaN  NaN   NaN   NaN   NaN   NaN  \n",
+       "3      ... NaN NaN   NaN   NaN  NaN  NaN   NaN   NaN   NaN   NaN  \n",
+       "4      ... NaN NaN   NaN   NaN  NaN  NaN   NaN   NaN   NaN   NaN  \n",
+       "...    ...  ..  ..   ...   ...  ...  ...   ...   ...   ...   ...  \n",
+       "46647  ... NaN NaN  1.57  2.38  NaN  NaN  1.66  2.45  1.60  2.30  \n",
+       "46648  ... NaN NaN  1.22  4.33  NaN  NaN  1.24  4.91  1.21  4.34  \n",
+       "46649  ... NaN NaN  2.38  1.57  NaN  NaN  3.12  1.57  2.68  1.46  \n",
+       "46650  ... NaN NaN  1.33  3.40  NaN  NaN  1.41  3.80  1.31  3.40  \n",
+       "46651  ... NaN NaN  3.30  1.33  NaN  NaN  3.58  1.36  3.36  1.31  \n",
+       "\n",
+       "[46652 rows x 54 columns]"
+      ]
+     },
+     "execution_count": 16,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "data"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {
+    "_uuid": "35bac39d0eb0df67bd9b060ff1fe40961d192d8a"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array(['International', 'Grand Slam', 'International Gold', 'Masters',\n",
+       "       'Masters Cup', 'International Series', 'ATP250', 'ATP500',\n",
+       "       'Masters 1000'], dtype=object)"
+      ]
+     },
+     "execution_count": 17,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "data.Series.unique()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Best 10 players on clay, grass, and hard surfaces"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# df with column names\n",
+    "surface = data[['Surface', 'Winner', 'Loser']]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(46652, 3)"
+      ]
+     },
+     "execution_count": 20,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "surface.shape"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# create 2 df for winner and looser and change the column names to player\n",
+    "surface_w = surface[['Surface', 'Winner']]\n",
+    "surface_l = surface[['Surface', 'Loser']]\n",
+    "surface_w.columns = ['Surface', 'Player']\n",
+    "surface_l.columns = ['Surface', 'Player']"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 22,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# add 1 more column to the df and fill with sequential nums from 1 to length of df\n",
+    "surface_w['idx'] = range(1, len(surface_w) + 1)\n",
+    "surface_l['idx'] = range(1, len(surface_l) + 1)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# count the num of winning matches for every surface and player combination \n",
+    "surface_w = surface_w.groupby(['Surface', 'Player']).count()\n",
+    "surface_w = surface_w.reset_index()\n",
+    "surface_w.columns = ['Surface', 'Player', 'Count_Win']\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# count the num of lost matches for every surface and player combination\n",
+    "surface_l = surface_l.groupby(['Surface', 'Player']).count()\n",
+    "surface_l = surface_l.reset_index()\n",
+    "surface_l.columns = ['Surface', 'Player', 'Count_Lose']"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 25,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "surface = pd.merge(surface_w, surface_l, on=['Surface', 'Player'])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "surface['total_play'] = surface['Count_Win'] + surface['Count_Lose']"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 27,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "surface['perc_win'] = round(surface['Count_Win'] / surface['total_play'],4)*100"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "surface = surface[surface.total_play > 50]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "surface.sort_values(by='perc_win', ascending=False).head(30)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "surface.Surface.unique()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Best players on Clay\n",
+    "\n",
+    "top_Clay = surface[surface.Surface == 'Clay'].sort_values(by='perc_win', ascending = False).head(10)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# plot the graph\n",
+    "g=sns.catplot(x='Player', y='perc_win', data=top_Clay, kind='bar', size=5, aspect=2)\n",
+    "g.set_xticklabels(labels = top_Clay.Player,  rotation=90)\n",
+    "plt.title('Best players on Clay')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Best player on Grass\n",
+    "\n",
+    "top_Grass = surface[surface.Surface == 'Grass'].sort_values(by='perc_win', ascending = False).head(10)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# plot the graph\n",
+    "g=sns.catplot(x='Player', y='perc_win', data=top_Grass, kind='bar', size=5, aspect=2)\n",
+    "g.set_xticklabels(labels = top_Grass.Player,  rotation=90)\n",
+    "plt.title('Best players on Grass')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Best players on Hard surface\n",
+    "\n",
+    "top_Hard = surface[surface.Surface == 'Hard'].sort_values(by='perc_win', ascending = False).head(10)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# plot the graph\n",
+    "g=sns.catplot(x='Player', y='perc_win', data=top_Hard, kind='bar', size=5, aspect=2)\n",
+    "g.set_xticklabels(labels = top_Hard.Player,  rotation=90)\n",
+    "plt.title('Best players on Hard Surface')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "#"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "celltoolbar": "Tags",
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.4"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 1
+}
