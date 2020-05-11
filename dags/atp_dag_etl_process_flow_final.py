@@ -28,37 +28,75 @@ import pymysql
 import papermill as pm
 from airflow.models import Variable
 
-var_kaggle_api_cmd = Variable.get("var_kaggle_api_cmd")
-var_path_unzip_from = Variable.get("var_path_unzip_from")
-var_path_to = Variable.get("var_path_to")
-var_file_name = Variable.get("var_file_name")
-var_engine_path = Variable.get("var_engine_path")
-var_csv_read_path = Variable.get("var_csv_read_path")
-var_table = Variable.get("var_table")
-var_input_notebook = Variable.get("var_input_notebook")
-var_output_notebook = Variable.get("var_output_notebook")
-df_atp = pd.DataFrame()
+
+######################
+#   Read Variables
+######################
+
+var_list = Variable.get("tennis_atp_variables", deserialize_json=True)
+var_kaggle_api_cmd = var_list["var_kaggle_api_cmd"]
+var_path_unzip_from = var_list["var_path_unzip_from"]
+var_csv_path = var_list["var_csv_path"]
+var_csv_path_clay = var_list["var_csv_path_clay"]
+var_csv_path_grass = var_list["var_csv_path_grass"]
+var_csv_path_hard = var_list["var_csv_path_hard"]
+var_data_file_name = var_list["var_data_file_name"]
+var_engine_path = var_list["var_engine_path"]
+# var_csv_read_path = Variable.get("var_csv_read_path")
+var_sql_table = var_list["var_sql_table"]
+var_input_notebook_clay = var_list["var_input_notebook_clay"]
+var_output_notebook_clay = var_list["var_output_notebook_clay"]
+var_input_notebook_grass = var_list["var_input_notebook_grass"]
+var_output_notebook_grass = var_list["var_output_notebook_grass"]
+var_input_notebook_hard = var_list["var_input_notebook_hard"]
+var_output_notebook_hard = var_list["var_output_notebook_hard"]
+var_topclay1png = var_list['var_topclay1png']
+var_topclay2png = var_list['var_topclay2png']
+var_topclay3html = var_list['var_topclay3html']
+var_topgrass1png = var_list['var_topgrass1png']
+var_topgrass2png = var_list['var_topgrass2png']
+var_topgrass3html = var_list['var_topgrass3html']
+var_tophard1png = var_list['var_tophard1png']
+var_tophard2png = var_list['var_tophard2png']
+var_tophard3html = var_list['var_tophard3html']
+var_pdfreport = var_list['var_pdfreport']
+
+#var_kaggle_api_cmd = 'kaggle datasets download -d jordangoblet/atp-tour-20002016 -p /Users/psehgal/atp_test --force'
+
+#df_atp = pd.DataFrame()
+
+#######################
+#   Functions
+#######################
+
 
 def unzip():
     zf = zipfile.ZipFile(var_path_unzip_from)
-    df = pd.read_csv(zf.open(var_file_name),
+    df = pd.read_csv(zf.open(var_data_file_name),
                      dtype={"Winner": str, "Loser": str, "WRank": str, "LRank": str},
                      encoding='ISO-8859-1')
-    # df.to_csv(var_path_to)
-    global df_atp
-    df_atp = df
+    df.to_csv(var_csv_path)
 
 
 def remove_columns():
-    df_atp.drop(columns=[
-                        'CBW', 'CBL', 'GBW', 'GBL', 'IWW', 'IWL', 'SBW', 'SBL', 'B365W', 'B365L',
-                        'B&WW', 'B&WL', 'EXW', 'EXL', 'PSW', 'PSL', 'WPts', 'LPts', 'UBW', 'UBL',
-                        'LBW', 'LBL', 'SJW', 'SJL', 'MaxW', 'MaxL', 'AvgW', 'AvgL'
-                         ])
+    df = pd.read_csv(var_csv_path, encoding='ISO-8859-1')
+    df.drop(columns=[
+        'CBW', 'CBL', 'GBW', 'GBL', 'IWW', 'IWL', 'SBW', 'SBL', 'B365W', 'B365L',
+        'B&WW', 'B&WL', 'EXW', 'EXL', 'PSW', 'PSL', 'WPts', 'LPts', 'UBW', 'UBL',
+        'LBW', 'LBL', 'SJW', 'SJL', 'MaxW', 'MaxL', 'AvgW', 'AvgL',
+    ], axis=1, inplace=True)
+    df_clay = df.loc[df['Surface'] == 'Clay']
+    df_grass= df.loc[df['Surface'] == 'Grass']
+    df_hard = df.loc[df['Surface'] == 'Hard']
+    df_clay.to_csv(var_csv_path_clay)
+    df_grass.to_csv(var_csv_path_grass)
+    df_hard.to_csv(var_csv_path_hard)
+    df.to_csv(var_csv_path)
 
 
 def save_csv():
     pass
+
 
 def upload_file(file_name, bucket, object_name=None):
     """
@@ -90,23 +128,63 @@ def upload_raw_data():
 
 def insert_sql():
     engine = create_engine(var_engine_path)
-    df = pd.read_csv(var_csv_read_path, encoding='ISO-8859-1')
-    df.to_sql(name=var_table, con=engine, index=False, if_exists='replace')
+    df = pd.read_csv(var_csv_path, encoding='ISO-8859-1')
+    df.to_sql(name=var_sql_table, con=engine, index=False, if_exists='replace')
 
 
-def call_jupyter():
+def call_jupyter_clay():
     pm.execute_notebook(
-                        var_input_notebook,
-                        var_output_notebook,
-                        parameters={'file_name': var_csv_read_path},
-                        )
+        var_input_notebook_clay,
+        var_output_notebook_clay,
+        parameters={
+                    'file_name': var_csv_path_clay,
+                    'topclay1png': var_topclay1png,
+                    'topclay2png': var_topclay2png,
+                    'topclay3html': var_topclay3html
+                    }
 
+    )
+
+def call_jupyter_grass():
+    pm.execute_notebook(
+        var_input_notebook,
+        var_output_notebook,
+        parameters={
+                    'file_name': var_csv_path_grass,
+                    'topgrass1png': var_topgrass1png,
+                    'topgrass2png': var_topgrass2png,
+                    'topgrass3html': var_topgrass3html
+                    }
+
+    )
+def call_jupyter_hard():
+    pm.execute_notebook(
+        var_input_notebook,
+        var_output_notebook,
+        parameters={
+                    'file_name': var_csv_path_hard,
+                    'tophard1png': var_tophard1png,
+                    'tophard2png': var_tophard2png,
+                    'tophard3html': var_tophard3html
+                    }
+
+    )
+
+def call_jupyter_pdfreport():
+    pm.execute_notebook(
+        var_input_notebook,
+        var_output_notebook,
+        parameters={'file_name': var_csv_path},
+    )
 
 def insert_pdfreport():
     upload_file('/Users/psehgal/dev/airflow_home/atp_mens_tour_pdf_report.pdf', 'preeti.first.boto.s3.bucket',
                 'pdfreport')
 
 
+#########################
+#  Dags Pipeline code
+#########################
 
 
 default_args = {
@@ -129,51 +207,75 @@ dag = DAG(
 )
 
 t1 = BashOperator(
-    task_id='run_kaggle_api',
+    task_id='get_data_using_api',
     bash_command=var_kaggle_api_cmd,
+#    bash_command='kaggle datasets download -d jordangoblet/atp-tour-20002016 -p /Users/psehgal/atp_test --force',
     dag=dag,
 )
 
-t2 = PythonOperator(
-    task_id='unzip_api',
-    provide_context=False,
-    python_callable=unzip,
-    dag=dag,
+t2a = PythonOperator(
+     task_id='unzip_api_data',
+     provide_context=False,
+     python_callable=unzip,
+     dag=dag,
+)
+
+t2b = PythonOperator(
+     task_id='drop_unwanted_columns',
+     provide_context=False,
+     python_callable=remove_columns,
+     dag=dag,
 )
 
 t3 = PythonOperator(
-    task_id='remove_unwanted_columns',
-    provide_context=False,
-    python_callable=remove_columns,
-    dag=dag,
-)
-# t3 = PythonOperator(
-#         task_id='move_rawdata_to_S3',
-#         provide_context=False,
-#         python_callable=upload_raw_data,
-#         dag=dag,
-# )
-
-t4 = PythonOperator(
-        task_id='move_data_from_file_to_SQL',
+        task_id='upload_rawdata_to_S3',
         provide_context=False,
-        python_callable=insert_sql,
+        python_callable=upload_raw_data,
         dag=dag,
 )
 
-# t5 = PythonOperator(
-#         task_id='call_jupyter_from_pythionoperator',
-#         provide_context=False,
-#         python_callable=call_jupyter,
-#         dag=dag,
-# )
+t4 = PythonOperator(
+     task_id='insert_rawdata_into_SQL',
+     provide_context=False,
+     python_callable=insert_sql,
+     dag=dag,
+)
 
-# t6 = PythonOperator(
-#         task_id='move_pdfreport_to_s3',
-#         provide_context=False,
-#         python_callable=insert_pdfreport,
-#         dag=dag,
-# )
+t5 = PythonOperator(
+        task_id='top_clay_players',
+        provide_context=False,
+        python_callable=call_jupyter_clay,
+        dag=dag,
+)
 
-t1 >> t2 >> t4
+t6 = PythonOperator(
+        task_id='top_grass_players',
+        provide_context=False,
+        python_callable=call_jupyter_grass,
+        dag=dag,
+)
+
+t7 = PythonOperator(
+        task_id='top_hard_players',
+        provide_context=False,
+        python_callable=call_jupyter_hard,
+        dag=dag,
+)
+
+t8 = PythonOperator(
+        task_id='generate_pdf_report',
+        provide_context=False,
+        python_callable=call_jupyter_pdfreport,
+        dag=dag,
+)
+
+t9 = PythonOperator(
+        task_id='upload_pdfreport_to_s3',
+        provide_context=False,
+        python_callable=insert_pdfreport,
+        dag=dag,
+)
+
+t1 >> t2a >> t2b >> [t3, t4, t5, t6, t7] >> t8 >> t9
+# t2 >> t3 >> t4
 # t1 >> t2 >> [t3, t4] >> t5 >> t6
