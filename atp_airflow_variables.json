@@ -1,0 +1,33 @@
+{
+	"tennis_atp_variables": 
+	{
+		"var_kaggle_api_cmd": "kaggle datasets download -d jordangoblet/atp-tour-20002016 -p /Users/psehgal/atp_test --force",
+		"var_path_unzip_from": "/Users/psehgal/atp_test/atp-tour-20002016.zip",
+		"var_csv_path": "/Users/psehgal/atp_test/Data.csv",
+		"var_csv_path_clay": "/Users/psehgal/atp_test/Data_clay.csv",
+		"var_csv_path_grass": "/Users/psehgal/atp_test/Data_grass.csv",
+		"var_csv_path_hard": "/Users/psehgal/atp_test/Data_hard.csv",
+		"var_data_file_name": "Data.csv",
+		"var_engine_path": "mysql+pymysql://root:yourpassword@localhost:3306/atp_tennis",
+		"var_sql_table": "atprawdata",
+		"var_input_notebook_clay": "/Users/psehgal/dev/airflow_home/Tennis_Data_Pipeline_Airflow_Project/jupyter_notebooks/atp_top_claysurface.ipynb",
+		"var_output_notebook_clay": "/Users/psehgal/dev/airflow_home/Tennis_Data_Pipeline_Airflow_Project/jupyter_notebooks/atp_top_claysurface_output.ipynb",
+		"var_input_notebook_grass": "/Users/psehgal/dev/airflow_home/Tennis_Data_Pipeline_Airflow_Project/jupyter_notebooks/atp_top_grasssurface.ipynb",
+		"var_output_notebook_grass": "/Users/psehgal/dev/airflow_home/Tennis_Data_Pipeline_Airflow_Project/jupyter_notebooks/atp_top_grasssurface_output.ipynb",
+		"var_input_notebook_hard": "/Users/psehgal/dev/airflow_home/Tennis_Data_Pipeline_Airflow_Project/jupyter_notebooks/atp_top_hardsurface.ipynb",
+		"var_output_notebook_hard": "/Users/psehgal/dev/airflow_home/Tennis_Data_Pipeline_Airflow_Project/jupyter_notebooks/atp_top_hardsurface_ouput.ipynb",
+		"var_input_notebook_report": "/Users/psehgal/dev/airflow_home/Tennis_Data_Pipeline_Airflow_Project/jupyter_notebooks/atp_report.ipynb",
+		"var_output_notebook_report": "/Users/psehgal/dev/airflow_home/Tennis_Data_Pipeline_Airflow_Project/jupyter_notebooks/atp_report_ouput.ipynb",
+		"var_topclay1png": "/Users/psehgal/dev/airflow_home/Tennis_Data_Pipeline_airflow_Project/images_for_reports/topclay1png.png",
+		"var_topclay2png": "/Users/psehgal/dev/airflow_home/Tennis_Data_Pipeline_airflow_Project/images_for_reports/topclay2png.png",
+		"var_topclay3html": "/Users/psehgal/dev/airflow_home/Tennis_Data_Pipeline_airflow_Project/images_for_reports/topclay3html.html",
+		"var_topgrass1png": "/Users/psehgal/dev/airflow_home/Tennis_Data_Pipeline_airflow_Project/images_for_reports/topgrass1png.png",
+		"var_topgrass2png": "/Users/psehgal/dev/airflow_home/Tennis_Data_Pipeline_airflow_Project/images_for_reports/topgrass2png.png",
+		"var_topgrass3html": "/Users/psehgal/dev/airflow_home/Tennis_Data_Pipeline_airflow_Project/images_for_reports/topgrass3html.html",
+		"var_tophard1png": "/Users/psehgal/dev/airflow_home/Tennis_Data_Pipeline_airflow_Project/images_for_reports/tophard1png.png",
+		"var_tophard2png": "/Users/psehgal/dev/airflow_home/Tennis_Data_Pipeline_airflow_Project/images_for_reports/tophard2png.png",
+		"var_tophard3html": "/Users/psehgal/dev/airflow_home/Tennis_Data_Pipeline_airflow_Project/images_for_reports/tophard3html.html",
+		"var_pdfreport": "/Users/psehgal/dev/airflow_home/Tennis_Data_Pipeline_airflow_Project/images_for_reports/finalreport.pdf"
+	}
+
+}
