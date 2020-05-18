@@ -16,5 +16,7 @@ test_files/
 *.pem
 *.amazonaws.com
 .ipynb_checkpoints/
+dags/atp_airflow_variables.json
+jupyter_notebooks/.ipynb_checkpoints
 
 

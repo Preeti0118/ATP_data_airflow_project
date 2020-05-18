@@ -34,7 +34,9 @@ from airflow.models import Variable
 ######################
 
 var_list = Variable.get("tennis_atp_variables", deserialize_json=True)
+
 var_kaggle_api_cmd = var_list["var_kaggle_api_cmd"]
+var_atp_report_cmd = var_list["var_atp_report_cmd"]
 var_path_unzip_from = var_list["var_path_unzip_from"]
 var_csv_path = var_list["var_csv_path"]
 var_csv_path_clay = var_list["var_csv_path_clay"]
@@ -42,7 +44,6 @@ var_csv_path_grass = var_list["var_csv_path_grass"]
 var_csv_path_hard = var_list["var_csv_path_hard"]
 var_data_file_name = var_list["var_data_file_name"]
 var_engine_path = var_list["var_engine_path"]
-# var_csv_read_path = Variable.get("var_csv_read_path")
 var_sql_table = var_list["var_sql_table"]
 var_input_notebook_clay = var_list["var_input_notebook_clay"]
 var_output_notebook_clay = var_list["var_output_notebook_clay"]
@@ -50,20 +51,19 @@ var_input_notebook_grass = var_list["var_input_notebook_grass"]
 var_output_notebook_grass = var_list["var_output_notebook_grass"]
 var_input_notebook_hard = var_list["var_input_notebook_hard"]
 var_output_notebook_hard = var_list["var_output_notebook_hard"]
+var_input_notebook_final = var_list["var_input_notebook_final"]
+var_output_notebook_final = var_list["var_output_notebook_final"]
 var_topclay1png = var_list['var_topclay1png']
 var_topclay2png = var_list['var_topclay2png']
-var_topclay3html = var_list['var_topclay3html']
+var_topclay3csv = var_list['var_topclay3csv']
 var_topgrass1png = var_list['var_topgrass1png']
 var_topgrass2png = var_list['var_topgrass2png']
-var_topgrass3html = var_list['var_topgrass3html']
+var_topgrass3csv = var_list['var_topgrass3csv']
 var_tophard1png = var_list['var_tophard1png']
 var_tophard2png = var_list['var_tophard2png']
-var_tophard3html = var_list['var_tophard3html']
-var_pdfreport = var_list['var_pdfreport']
-
-#var_kaggle_api_cmd = 'kaggle datasets download -d jordangoblet/atp-tour-20002016 -p /Users/psehgal/atp_test --force'
-
-#df_atp = pd.DataFrame()
+var_tophard3csv = var_list['var_tophard3csv']
+var_atp_report = var_list['var_atp_report']
+var_s3_bucket = var_list['var_s3_bucket']
 
 #######################
 #   Functions
@@ -85,18 +85,16 @@ def remove_columns():
         'B&WW', 'B&WL', 'EXW', 'EXL', 'PSW', 'PSL', 'WPts', 'LPts', 'UBW', 'UBL',
         'LBW', 'LBL', 'SJW', 'SJL', 'MaxW', 'MaxL', 'AvgW', 'AvgL',
     ], axis=1, inplace=True)
+    df.to_csv(var_csv_path)
     df_clay = df.loc[df['Surface'] == 'Clay']
     df_grass= df.loc[df['Surface'] == 'Grass']
     df_hard = df.loc[df['Surface'] == 'Hard']
     df_clay.to_csv(var_csv_path_clay)
     df_grass.to_csv(var_csv_path_grass)
     df_hard.to_csv(var_csv_path_hard)
-    df.to_csv(var_csv_path)
 
-
-def save_csv():
-    pass
-
+def upload_raw_data():
+    upload_file(var_csv_path, var_s3_bucket, 'atpdata.csv')
 
 def upload_file(file_name, bucket, object_name=None):
     """
@@ -122,10 +120,6 @@ def upload_file(file_name, bucket, object_name=None):
     return True
 
 
-def upload_raw_data():
-    upload_file('/Users/psehgal/atp_test/Data.csv', 'preeti.first.boto.s3.bucket', 'atpdata')
-
-
 def insert_sql():
     engine = create_engine(var_engine_path)
     df = pd.read_csv(var_csv_path, encoding='ISO-8859-1')
@@ -140,46 +134,55 @@ def call_jupyter_clay():
                     'file_name': var_csv_path_clay,
                     'topclay1png': var_topclay1png,
                     'topclay2png': var_topclay2png,
-                    'topclay3html': var_topclay3html
+                    'topclay3csv': var_topclay3csv
                     }
 
     )
 
 def call_jupyter_grass():
     pm.execute_notebook(
-        var_input_notebook,
-        var_output_notebook,
+        var_input_notebook_grass,
+        var_output_notebook_grass,
         parameters={
                     'file_name': var_csv_path_grass,
                     'topgrass1png': var_topgrass1png,
                     'topgrass2png': var_topgrass2png,
-                    'topgrass3html': var_topgrass3html
+                    'topgrass3csv': var_topgrass3csv
                     }
 
     )
 def call_jupyter_hard():
     pm.execute_notebook(
-        var_input_notebook,
-        var_output_notebook,
+        var_input_notebook_hard,
+        var_output_notebook_hard,
         parameters={
                     'file_name': var_csv_path_hard,
                     'tophard1png': var_tophard1png,
                     'tophard2png': var_tophard2png,
-                    'tophard3html': var_tophard3html
+                    'tophard3csv': var_tophard3csv
                     }
 
     )
 
-def call_jupyter_pdfreport():
+def call_jupyter_final():
     pm.execute_notebook(
-        var_input_notebook,
-        var_output_notebook,
-        parameters={'file_name': var_csv_path},
-    )
+        var_input_notebook_final,
+        var_output_notebook_final,
+        parameters={
+                    'var_topclay1png': var_topclay1png,
+                    'var_topclay2png': var_topclay2png,
+                    'var_topclay3csv': var_topclay3csv,
+                    'var_topgrass1png': var_topgrass1png,
+                    'var_topgrass2png': var_topgrass2png,
+                    'var_topgrass3csv': var_topgrass3csv,
+                    'var_tophard1png': var_tophard1png,
+                    'var_tophard2png': var_tophard2png,
+                    'var_tophard3csv': var_tophard3csv
+                    }
 
-def insert_pdfreport():
-    upload_file('/Users/psehgal/dev/airflow_home/atp_mens_tour_pdf_report.pdf', 'preeti.first.boto.s3.bucket',
-                'pdfreport')
+    )
+def upload_atpreport():
+    upload_file(var_atp_report, var_s3_bucket, 'atp_report.html')
 
 
 #########################
@@ -209,7 +212,6 @@ dag = DAG(
 t1 = BashOperator(
     task_id='get_data_using_api',
     bash_command=var_kaggle_api_cmd,
-#    bash_command='kaggle datasets download -d jordangoblet/atp-tour-20002016 -p /Users/psehgal/atp_test --force',
     dag=dag,
 )
 
@@ -221,21 +223,21 @@ t2a = PythonOperator(
 )
 
 t2b = PythonOperator(
-     task_id='drop_unwanted_columns',
+     task_id='cleanse_data',
      provide_context=False,
      python_callable=remove_columns,
      dag=dag,
 )
 
 t3 = PythonOperator(
-        task_id='upload_rawdata_to_S3',
+        task_id='upload_cleansed_data_to_S3',
         provide_context=False,
         python_callable=upload_raw_data,
         dag=dag,
 )
 
 t4 = PythonOperator(
-     task_id='insert_rawdata_into_SQL',
+     task_id='insert_cleansed_data_into_SQL',
      provide_context=False,
      python_callable=insert_sql,
      dag=dag,
@@ -262,20 +264,25 @@ t7 = PythonOperator(
         dag=dag,
 )
 
-t8 = PythonOperator(
-        task_id='generate_pdf_report',
+t8a = PythonOperator(
+        task_id='final_report',
         provide_context=False,
-        python_callable=call_jupyter_pdfreport,
+        python_callable=call_jupyter_final,
         dag=dag,
+)
+
+t8b = BashOperator(
+    task_id='convert_report_to_html',
+    bash_command=var_atp_report_cmd,
+    dag=dag,
 )
 
 t9 = PythonOperator(
-        task_id='upload_pdfreport_to_s3',
+        task_id='upload_html_report_to_s3',
         provide_context=False,
-        python_callable=insert_pdfreport,
+        python_callable=upload_atpreport,
         dag=dag,
 )
 
-t1 >> t2a >> t2b >> [t3, t4, t5, t6, t7] >> t8 >> t9
-# t2 >> t3 >> t4
-# t1 >> t2 >> [t3, t4] >> t5 >> t6
+t1 >> t2a >> t2b >> [t3, t4, t5, t6, t7] >> t8a >> t8b >> t9
+
