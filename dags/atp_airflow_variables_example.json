@@ -1,0 +1,33 @@
+{
+	"tennis_atp_variables": {
+		"var_kaggle_api_cmd": "xxx",
+		"var_atp_report_cmd": "xxx",
+		"var_path_unzip_from": "xxx",
+		"var_data_file_name": "xxx",
+		"var_csv_path": "xxx",
+		"var_csv_path_clay": "xxx",
+		"var_csv_path_grass": "xxx",
+		"var_csv_path_hard": "xxx",
+		"var_engine_path": "xxx",
+		"var_sql_table": "xxx",
+		"var_input_notebook_clay": "xxx",
+		"var_output_notebook_clay": "xxx",
+		"var_input_notebook_grass": "xxx",
+		"var_output_notebook_grass": "xxx",
+		"var_input_notebook_hard": "xxx",
+		"var_output_notebook_hard": "xxx",
+		"var_input_notebook_final": "xxx",
+		"var_output_notebook_final": "xxx",
+		"var_topclay1png": "xxx",
+		"var_topclay2png": "xxx",
+		"var_topclay3csv": "xxx",
+		"var_topgrass1png": "xxx",
+		"var_topgrass2png": "xxx",
+		"var_topgrass3csv": "xxx",
+		"var_tophard1png": "xxx",
+		"var_tophard2png": "xxx",
+		"var_tophard3csv": "xxx",
+		"var_atp_report": "xxx",
+		"var_s3_bucket": "xxx"
+		}
+}
