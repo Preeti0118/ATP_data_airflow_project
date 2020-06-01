@@ -7,11 +7,11 @@ This project demonstrates the use of various technologies, like Airflow, DAGs, P
 
 
 ###Use Case:
-I took ATP mens’ tennis data from Kaggle API for this project and analyzed who are the best players on different surfaces like Clay, Grass and Hard surface.
+I took ATP mens’ tour tennis data for this project and analyzed who are the best players on different surfaces like Clay, Grass and Hard surface.
 
 
 ###How it works:
- - First use BashOperator to call Kaggle api for downloading the required ATP men’s data. This data will be in the form of a zipped file. 
+ - First use BashOperator to call the api for downloading the required ATP men’s tour tennis data. This data will be in the form of a zipped file. 
  - Unzip the file and convert into pandas dataframe
  - Cleanse the data using pandas to delete unwanted data and create a csv file of cleansed data for further processing
  - Upload the cleansed data file on AWS S3 using boto3 and also 
