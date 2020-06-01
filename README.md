@@ -1,6 +1,6 @@
 #Tennis Data Pipeline Project
 
-![description_if_image_fails_to_load](Tennis_Data_Pipeline.png)
+![description_if_image_fails_to_load](tennis_data_pipelineEC2.png)
 
 ###Project Description:
 This project demonstrates the use of various technologies, like Airflow, DAGs, Papermill, Pandas, Jupyter Notebook, MySql or postgreSQL  db, and AWS S3,  to build an end to end data pipeline for extracting data using API and then processing the data in the pipeline by using Papermill and Jupyter notebook. The final output is uploaded on AWS S3 bucket. The pipeline can be  scheduled and run on a regular basis.
