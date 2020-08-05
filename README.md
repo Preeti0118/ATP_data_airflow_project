@@ -8,7 +8,7 @@ This project demonstrates the use of various technologies, like Airflow, DAGs, P
 ### Use Case:
 I took ATP mens’ tour tennis data for this project and analyzed who are the best players on different surfaces like Clay, Grass and Hard surface.
 
-[Tableau - Tennis Dashboard](https://public.tableau.com/profile/preeti.sehgal#!/vizhome/TennisDashboard1/Dashboard1?publish=yes)
+[Tableau Dashboard- Tennis Top Players](https://public.tableau.com/profile/preeti.sehgal#!/vizhome/TennisDashboard1/Dashboard1?publish=yes)
 
 ### How it works:
  - First use BashOperator to call the api for downloading the required ATP men’s tour tennis data. This data will be in the form of a zipped file. 
